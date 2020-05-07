@@ -16,6 +16,7 @@
 # along with Murder Mason. If not, see <https://www.gnu.org/licenses/>.
 
 import asyncpg
+import jinja2
 import discord
 import toml
 
@@ -23,6 +24,10 @@ class MurderMason(discord.Client):
 	def __init__(self):
 		super().__init__(status=discord.Status.idle)
 		self.reload_config()
+		self.queries = jinja2.Environment(
+			loader=jinja2.FileSystemLoader('.'),
+			line_statement_prefix='-- :',
+		).get_template('queries.sql').module
 
 	async def login(self, token=None, *, bot=True):
 		self.pool = await asyncpg.connect(**self.config['database'])
@@ -48,14 +53,7 @@ class MurderMason(discord.Client):
 
 		members = [member.id for member in role.members if not member.bot]
 		if members:
-			await self.pool.execute(self.gen_moderators_upsert(len(members)), members)
-
-	@staticmethod
-	def gen_moderators_upsert(batch_size):
-		query = 'INSERT INTO moderators (id) VALUES ({}) ON CONFLICT DO NOTHING'
-		rv = query.format(', '.join(f'(${n})' for n in range(1, batch_size + 1)))
-		print(rv)
-		return rv
+			await self.pool.execute(self.queries.update_moderators(len(members)), members)
 
 	async def on_member_update(self, before, after):
 		if before.guild.id != self.config['support_server'].get('id') or after.bot:
@@ -66,9 +64,9 @@ class MurderMason(discord.Client):
 			return
 
 		if mod_role in before.roles and mod_role not in after.roles:
-			await self.pool.execute('DELETE FROM moderators WHERE id = $1', after.id)
+			await self.pool.execute(self.queries.delete_moderator(), after.id)
 		elif mod_role not in before.roles and mod_role in after.roles:
-			await self.pool.execute('INSERT INTO moderators (id) VALUES ($1)', after.id)
+			await self.pool.execute(self.queries.add_moderator(), after.id)
 
 	def _moderator_role(self):
 		guild_id = self.config['support_server'].get('id')
