@@ -5,8 +5,8 @@
 database = 'ec'
 
 [tokens]
-discord = 'NzA3NzYyNjQxMTk5ODI0ODk3.XrNhXA.ji48Vkqb0yIZJ_97Arn_PAqewOk'
+discord = 'Mz...'
 
 [support_server]
-id = 410627685589450752
-moderator_role_id = 451282186872553472
+id = 1234
+moderator_role_id = 5678
