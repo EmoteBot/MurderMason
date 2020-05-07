@@ -17,11 +17,10 @@
 
 -- :macro update_moderators(batch_size)
 INSERT INTO moderators (id)
-VALUES (
+VALUES
 	-- :for n in range(1, batch_size + 1)
 	(${{ n }}){% if not loop.last %}, {% endif %}
 	-- :endfor
-)
 ON CONFLICT DO NOTHING
 -- :endmacro
 

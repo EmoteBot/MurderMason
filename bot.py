@@ -53,7 +53,7 @@ class MurderMason(discord.Client):
 
 		members = [member.id for member in role.members if not member.bot]
 		if members:
-			await self.pool.execute(self.queries.update_moderators(len(members)), members)
+			await self.pool.execute(self.queries.update_moderators(len(members)), *members)
 
 	async def on_member_update(self, before, after):
 		if before.guild.id != self.config['support_server'].get('id') or after.bot:
