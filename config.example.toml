@@ -9,4 +9,5 @@ discord = 'Mz...'
 
 [support_server]
 id = 1234
+# users with this role in the support server will be able to modify/remove other people's emotes
 moderator_role_id = 5678
