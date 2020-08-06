@@ -15,6 +15,8 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with Murder Mason. If not, see <https://www.gnu.org/licenses/>.
 
+import contextlib
+
 import asyncpg
 import jinja2
 import discord
@@ -34,7 +36,8 @@ class MurderMason(discord.Client):
 		await super().login(self.config['tokens']['discord'])
 
 	async def close(self):
-		await self.pool.close()
+		with contextlib.suppress(AttributeError):
+			await self.pool.close()
 		await super().close()
 
 	async def on_ready(self):
