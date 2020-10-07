@@ -24,7 +24,14 @@ import toml
 
 class MurderMason(discord.Client):
 	def __init__(self):
-		super().__init__(status=discord.Status.idle)
+		super().__init__(
+			status=discord.Status.idle,
+			intents=discord.Intents(
+				guilds=True,
+				members=True,
+				bans=True,
+			),
+		)
 		self.reload_config()
 		self.queries = jinja2.Environment(
 			loader=jinja2.FileSystemLoader('.'),
